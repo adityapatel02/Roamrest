@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Example</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-body-white border-bottom sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/Listings">
+                <i class="fa-regular fa-compass"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+           
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Listings"><span>RoamRest</span></a>
+                    </li>
+                </ul>
+                <form class="d-flex ms-auto">
+                    <input class="form-control me-2 search-input" type="search" placeholder="Search Destinations" aria-label="Search">
+                    <button class="btn btn-outline-success search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </form>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/listings/new">RoamRest your home</a>
+                    </li>
+                    <% if(!req.user){ %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login"><b>Login</b></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/signUp"><b>SignUp</b></a>
+                    </li>
+                    <% } %>
+                    <% if(req.user){ %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">LogOut</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Your page content here -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+</body>
+</html>

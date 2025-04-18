@@ -1,0 +1,29 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<%- include('../includes/filter.ejs') %>
+<body>
+
+    <div class="row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+        <% for(let list of allListings){ %>
+        <a class="show" href="/listings/<%= list._id %>">
+        <div class="card">
+          <img src="<%= list.image.url %>" class="card-img-top" alt="Property image">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+              <h5 class="card-title"><%= list.title %></h5>
+              <p class="card-text without-tax">
+                 <%= list.location %>,<%= list.country %> <br>
+                 <strong>&#8377; <%= list.price.toLocaleString("en-IN") %></strong> /night
+              </p>
+              <p class="card-text with-tax" style="display: none;">
+                <%= list.title %> <br>
+                5 night . <strong>&#8377;<%= (list.price*5*1.18).toLocaleString("en-IN") %></strong> after taxes
+             </p>
+          </div>
+        </div>
+        </a>
+        <% } %>
+    </div>
+</body>
+<% layout("/layouts/boilerplate.ejs") %>
+
+

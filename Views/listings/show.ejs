@@ -1,0 +1,183 @@
+
+<%- layout("/layouts/boilerplate.ejs") %>
+<div class="row">
+    <div class="col-8 offset-2 mt-3">
+        <h3><%= listing_data.title %> </h3>
+    </div>
+    <div class="card col-6 offset-2 show-card">
+        <img src="<%= listing_data.image.url %>" class="card-img-top show-img" alt="Listing Image">
+        <div class="card-body">
+            <p>Owned By: <i><%=listing_data.owner.username %></i><br>
+                <%= listing_data.description %> <br>
+                <strong>&#8377; <%= listing_data.price.toLocaleString("en-IN") %></strong> /night <br>
+                <%= listing_data.location %>,<br>
+                <%= listing_data.country %>
+            </p><br>
+            <% if(req.user && req.user._id.toString() === listing_data.owner._id.toString()){ %>
+            <div class="row">
+                <a class="col-6 btn btn-primary" href="/listings/<%=listing_data.id%>/edit">Edit Information</a>
+                <form class="col-6 offset-1" action="/listings/<%=listing_data.id%>?_method=DELETE" method="POST">
+                    <button class="btn btn-primary w-40">Delete Listing</button>
+                </form>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    
+</div>
+<hr>
+
+
+<% if(req.user){ %>
+<div class="col-10 offset-1 review_form_div" >
+    <h4>Leave a Review -</h4>
+    <form action="/listings/<%= listing_data.id %>/reviews" method="POST" novalidate class="needs-validation">
+        <div class="mb-3 col-5">
+            <label for="rating" class="form-label"></label>
+            <fieldset class="starability-slot">
+                <h5>Rating:</h5>
+                <input type="radio" id="no-rate" class="input-no-rate" name="reviewRating" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="reviewRating" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="reviewRating" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="reviewRating" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="reviewRating" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="reviewRating" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+        </div>
+        
+        <div class="mb-3">
+            <label for="comments" class="form-label"><h5>Comment:</h5></label>
+            <textarea class="form-control" id="comments" name="reviewComment" placeholder="Enter comments" required rows="7"></textarea>
+            <div class="invalid-feedback">
+                Please submit some comments for review
+            </div>
+        </div>
+        <div class="mb-3">
+            <input class="btn btn-btn-dark" type="submit" value="ADD">
+        </div>
+        <br>
+  
+    </form>
+    
+ </div>
+ <hr>
+<% } %>
+
+<!-- Reviews -->
+<% if(listing_data.reviews.length > 0){ %>
+<div class="col-12">
+    <h4>All Reviews:-</h4><br>
+    <div class="row">
+    <% for(review of listing_data.reviews){ %>
+        <div class="card col-12 col-sm-5 col-md-3 review-div" >
+            <div class="card-body mb-3 mt-2">
+            <h5 class="card-title"><%=review.author.username %></h5>
+            <p><%= new Date(review.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ').replace(',', ',') %></p>
+            <p class="starability-result" data-rating="<%= review.rating %>"></p>
+            <p class="card-text"><%= review.comment %></p>
+            </div>
+            <% if (req.user && review.author._id.toString()=== req.user._id.toString()){ %>
+                <form action="/listings/<%= listing_data.id %>/reviews/<%= review._id %>?_method=DELETE" method="post" class="mb-2">
+                    <button class="btn btn-sm" type="submit">Delete</button>
+                </form>
+            <% } %>
+        </div>
+     <% } %>
+    </div>
+</div>
+<% } %>
+<hr>
+<br>
+
+<!-- map -->
+<div class="col-10">
+    <h3>Where you'll be</h3>
+    <div id="map" class="offset-1">
+        <script>
+            // Initialize the map centered at New Delhi coordinates
+            var map = L.map('map').setView([28.7041, 77.1025], 13);
+    
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+            // Define a custom red dot icon
+            var redDotIcon = L.icon({
+                iconUrl: 'https://i.pinimg.com/736x/46/26/92/462692e4e54000dfbd5656e4d6b930be.jpg', // URL to red dot icon image
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [8, 8], // Anchor point of the icon (base of the pin)
+                popupAnchor: [0,0] // Point from which the popup should open relative to the iconAnchor
+            });
+    
+            const data = null;
+    
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+    
+            xhr.addEventListener('readystatechange', function () {
+                if (this.readyState === this.DONE) {
+                    console.log(this.responseText);
+                    const response = JSON.parse(this.responseText);
+                    if (response && response.candidates && response.candidates[0] && response.candidates[0].geometry) {
+                        const location = response.candidates[0].geometry.location;
+                        const lat = location.lat;
+                        const lng = location.lng;
+    
+                        // Add marker to the map with the red dot icon
+                        L.marker([lat, lng], { icon: redDotIcon }).addTo(map)
+                            .bindPopup(`<b>${response.candidates[0].name}</b><br>${response.candidates[0].formatted_address}`)
+                            .openPopup();
+    
+                        // Center the map on the marker
+                        map.setView([lat, lng], 13);
+                    } else {
+                        console.error('Invalid response format');
+                    }
+                }
+            });
+            let url='https://map-places.p.rapidapi.com/findplacefromtext/json?input=<%= listing_data.location %>&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry';
+            xhr.open('GET', url);
+            xhr.setRequestHeader('x-rapidapi-key', 'c927054b2cmsh7f61fa09ed846aap195e1ajsn5592c918c5c2');
+            xhr.setRequestHeader('x-rapidapi-host', 'map-places.p.rapidapi.com');
+    
+            xhr.send(data);
+        </script>
+    </div>
+</div>
+<br>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

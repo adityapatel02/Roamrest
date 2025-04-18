@@ -1,0 +1,24 @@
+<% const success = req.flash("success"); %>
+<% if(success.length>0){ %>
+    <div class="alert alert-success flash-div col-6 offset-3" role="alert">
+         <%= success %> 
+         <div class="flash-btn-div">
+           <button type="button" class="flash-msg-btn" data-bs-dismiss="alert" aria-label="Clos">
+            X
+           </button>
+         </div>
+   </div>
+<% } %>
+
+<% const error = req.flash("error"); %>
+<% if(error.length>0){ %>
+    <div class="alert alert-success flash-div col-6 offset-3" role="alert">
+         <%= error %> 
+         <div class="flash-btn-div">
+           <button type="button" class="flash-msg-btn" data-bs-dismiss="alert" aria-label="Clos">
+            X
+           </button>
+         </div>
+   </div>
+<% } %>
+
